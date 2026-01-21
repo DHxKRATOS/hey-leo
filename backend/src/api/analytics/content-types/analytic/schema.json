@@ -1,0 +1,90 @@
+{
+  "kind": "collectionType",
+  "collectionName": "analytics",
+  "info": {
+    "singularName": "analytic",
+    "pluralName": "analytics",
+    "displayName": "Analytics",
+    "description": "Analytics data for cards and user interactions"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "card": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::card.card",
+      "inversedBy": "analytics"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user.user",
+      "inversedBy": "analytics"
+    },
+    "event_type": {
+      "type": "enumeration",
+      "enum": [
+        "view",
+        "unique_view",
+        "conversation",
+        "lead",
+        "link_click",
+        "qr_scan",
+        "share"
+      ],
+      "required": true
+    },
+    "source": {
+      "type": "enumeration",
+      "enum": [
+        "qr_code",
+        "direct_link",
+        "email_signature",
+        "ai_chat",
+        "social_media",
+        "website",
+        "other"
+      ],
+      "default": "other"
+    },
+    "device_type": {
+      "type": "enumeration",
+      "enum": ["mobile", "desktop", "tablet", "other"],
+      "default": "other"
+    },
+    "browser": {
+      "type": "string"
+    },
+    "os": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "text"
+    },
+    "referrer": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "json",
+      "description": "Additional event-specific data"
+    },
+    "timestamp": {
+      "type": "datetime"
+    }
+  }
+}

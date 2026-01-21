@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_subscription_plans",
+  "info": {
+    "singularName": "user-subscription-plan",
+    "pluralName": "user-subscription-plans",
+    "displayName": "User Subscription Plan",
+    "description": "User subscription to plans"
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user.user",
+      "inversedBy": "user_subscription_plans"
+    },
+    "plan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::plan.plan",
+      "inversedBy": "user_subscription_plans"
+    },
+    "plan_start_date": {
+      "type": "date",
+      "required": true
+    },
+    "plan_end_date": {
+      "type": "date"
+    },
+    "billing_cycle": {
+      "type": "enumeration",
+      "enum": ["monthly", "yearly", "lifetime"],
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["active", "expired", "cancelled"],
+      "required": true,
+      "default": "active"
+    },
+    "payment_status": {
+      "type": "enumeration",
+      "enum": ["pending", "completed", "failed"],
+      "required": true,
+      "default": "pending"
+    }
+  }
+}
