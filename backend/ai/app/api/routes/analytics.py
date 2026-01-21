@@ -36,18 +36,7 @@ async def get_analytics_metrics(
     limit: int = Query(10, ge=1, le=100),
     visitor_only: bool = Query(True, description="If true, only include visitor conversations (exclude training)")
 ):
-    """
-    Get analytics metrics for a specific user and card
-    
-    Parameters:
-    - user_id: User identifier
-    - card_id: Card identifier
-    - namespace: Optional namespace for filtering
-    - min_confidence: Minimum confidence threshold (0.0 to 1.0)
-    - max_confidence: Maximum confidence threshold (0.0 to 1.0)
-    - quality: Response quality filter (all_responses, good_responses, needs_improvement, unrated)
-    - limit: Maximum number of QA items to return
-    """
+    """Get analytics metrics for a specific user and card."""
     try:
         logger.info(f"Getting analytics metrics for user_id: {user_id}, card_id: {card_id}, time_filter: {time_filter}")
         
@@ -122,12 +111,13 @@ async def update_message_accuracy(
     message_id: str = Path(..., description="ID of the message to update"),
     update: AccuracyUpdate = Body(..., description="Accuracy update data")
 ):
-    """
-    Update the accuracy rating for a specific message
+    """Update the accuracy rating for a specific message.
     
-    Parameters:
-    - message_id: ID of the message to update (path parameter)
-    - update: Accuracy update data (request body)
+    This function updates the accuracy rating of a message identified by  the given
+    message_id. It first validates the accuracy value to ensure  it is between 0.0
+    and 1.0. If the value is valid, it retrieves the  chat service and attempts to
+    update the message accuracy. The function  handles potential errors and returns
+    an AccuracyResponse indicating  the success of the update operation.
     """
     try:
         if not (0.0 <= update.accuracy <= 1.0):
@@ -168,19 +158,7 @@ async def update_message_accuracy(
 
 @router.patch("/messages/accuracy/batch", response_model=BatchAccuracyResponse)
 async def batch_update_accuracy(updates: BatchAccuracyUpdate = Body(..., description="Batch accuracy updates")):
-    """
-    Update accuracy ratings for multiple messages in a single request
-    
-    Request body:
-    ```json
-    {
-        "updates": [
-            {"message_id": "id1", "accuracy": 0.95},
-            {"message_id": "id2", "accuracy": 0.85}
-        ]
-    }
-    ```
-    """
+    """Update accuracy ratings for multiple messages in a single request."""
     try:
         logger.info(f"Processing batch accuracy update for {len(updates.updates)} messages")
         
@@ -221,17 +199,25 @@ async def get_user_aggregated_analytics(
     limit: int = Query(10, ge=1, le=50, description="Maximum number of most asked questions to return"),
     visitor_only: bool = Query(True, description="If true, only include visitor conversations (exclude training)")
 ):
-    """
-    Get aggregated analytics metrics across all cards for a specific user
+    """Get aggregated analytics metrics across all cards for a specific user.
     
-    Parameters:
-    - user_id: User identifier
-    - card_id: Optional card identifier (if not provided, metrics will be aggregated across all cards)
-    - namespace: Optional namespace for filtering
-    - time_range: Time range filter (default: last_30_days). Options: last_30_days, last_7_days, last_3_months, last_year
-    - start_date: Optional start date for filtering (ISO format: YYYY-MM-DD)
-    - end_date: Optional end date for filtering (ISO format: YYYY-MM-DD)
-    - limit: Maximum number of most asked questions to return
+    This function retrieves various analytics metrics for a user, including total
+    conversations,  average confidence, average accuracy, and average response
+    time. It can filter results based  on a specific card, time range, and date
+    range. The function also logs relevant information  throughout the process and
+    handles potential errors gracefully.
+    
+    Args:
+        user_id (str): User identifier.
+        card_id (Optional[str]): Optional card identifier (if not provided, metrics will be
+            aggregated across all cards).
+        namespace (Optional[str]): Optional namespace for filtering.
+        time_range (str): Time range filter (default: last_30_days). Options:
+            last_30_days, last_7_days, last_3_months, last_year.
+        start_date (Optional[str]): Optional start date for filtering (ISO format: YYYY-MM-DD).
+        end_date (Optional[str]): Optional end date for filtering (ISO format: YYYY-MM-DD).
+        limit (int): Maximum number of most asked questions to return.
+        visitor_only (bool): If true, only include visitor conversations (exclude training).
     """
     try:
         logger.info(f"Getting aggregated analytics metrics for user_id: {user_id}")
@@ -342,17 +328,16 @@ async def search_conversations(
     limit: int = Query(20, ge=1, le=100, description="Maximum number of search results to return"),
     visitor_only: bool = Query(True, description="If true, only return visitor conversations (exclude training conversations)")
 ):
-    """
-    Search conversations by keywords in questions or answers
+    """Search conversations by keywords in questions or answers.
     
-    Parameters:
-    - user_id: User identifier
-    - card_id: Card identifier
-    - search_query: Optional keywords to search for in questions or answers (if not provided, returns all conversations)
-    - namespace: Optional namespace for filtering
-    - time_filter: Time filter for search results (all_time, today, this_week, this_month)
-    - limit: Maximum number of search results to return
-    - visitor_only: If true, only return visitor conversations (exclude training conversations where visitor_id is empty or matches user_id)
+    Args:
+        user_id (str): User identifier.
+        card_id (str): Card identifier.
+        search_query (Optional[str]): Optional keywords to search for in questions or answers.
+        namespace (Optional[str]): Optional namespace for filtering.
+        time_filter (str): Time filter for search results (all_time, today, this_week, this_month).
+        limit (int): Maximum number of search results to return.
+        visitor_only (bool): If true, only return visitor conversations.
     """
     try:
         logger.info(f"Searching conversations for user_id: {user_id} with query: '{search_query}', time filter: {time_filter}, visitor_only: {visitor_only}")
@@ -401,17 +386,14 @@ async def search_conversations(
 async def improve_answer(
     update: ImprovedAnswerUpdate
 ):
-    """
-    Improve an answer for a specific message
+    """Improve an answer for a specific message.
     
-    This endpoint allows card owners to provide improved answers for specific questions.
-    The improved answer replaces the original answer directly in the database.
-    
-    Parameters:
-    - message_id: ID of the original message
-    - improved_answer: The improved/updated answer text
-    - user_id: User who is making the improvement
-    - card_id: Card ID associated with the improvement
+    This endpoint allows card owners to provide improved answers for specific
+    questions.  The improved answer replaces the original answer directly in the
+    database. The function  retrieves the chat service, updates the answer using
+    the provided details, and handles  potential errors by returning appropriate
+    HTTP status codes if the original message is  not found or if other issues
+    occur during the update process.
     """
     try:
         logger.info(f"Improving answer for message {update.message_id}")
@@ -453,16 +435,18 @@ async def get_user_conversation_stats(
     user_id: str = Query(..., description="User ID to get conversation statistics for"),
     limit: Optional[int] = Query(None, description="Maximum number of cards to return")
 ):
-    """
-    Get conversation statistics for all cards belonging to a user.
-    Returns card_id and total conversation count for each card.
+    """Get conversation statistics for all cards belonging to a user.
+    
+    This function retrieves the total conversation count for each card associated
+    with a specified user.  It first fetches the user's cards and applies an
+    optional limit on the number of cards to process.  For each card, it gathers
+    the conversation count and compiles the results into a response model,
+    ensuring that any errors encountered during the process are logged and do not
+    halt execution for other cards.
     
     Args:
-        user_id: User identifier
-        limit: Optional limit on number of cards to return
-        
-    Returns:
-        UserConversationStatsResponse with list of cards and their conversation counts
+        user_id: User identifier to get conversation statistics for.
+        limit: Optional limit on the number of cards to return.
     """
     try:
         logger.info(f"Getting conversation stats for user {user_id} with limit {limit}")

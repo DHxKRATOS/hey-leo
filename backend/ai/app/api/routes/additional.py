@@ -12,7 +12,18 @@ router = APIRouter()
 
 @router.post("/add", response_model=AdditionalTextResponse)
 async def add_additional_text(request: AdditionalTextRequest):
-    """Add additional text to knowledge base (merges with existing text)"""
+    """Add additional text to the knowledge base by merging with existing text.
+    
+    This function handles the process of adding new text to the knowledge base  by
+    first retrieving any existing additional text associated with the user  and
+    card ID. It merges the new text with the existing entries, deletes the  old
+    entries, and then stores the merged text in the vector database.  Usage
+    tracking is also implemented to monitor the operation's resource  consumption.
+    
+    Args:
+        request (AdditionalTextRequest): The request object containing user ID,
+            card ID, namespace, and the new text to be added.
+    """
     try:
         # 📊 Start usage tracking
         usage_tracker = get_usage_tracker()
@@ -93,7 +104,7 @@ async def add_additional_text(request: AdditionalTextRequest):
 
 @router.get("/list", response_model=AdditionalTextListResponse)
 async def get_additional_texts(user_id: str, card_id: str, namespace: Optional[str] = None):
-    """Get all additional texts for a user"""
+    """Get all additional texts for a user."""
     try:
         # Get vector service
         vector_service = await get_vector_service()
@@ -120,7 +131,7 @@ async def get_additional_texts(user_id: str, card_id: str, namespace: Optional[s
 
 @router.delete("/delete", response_model=DeleteResponse)
 async def delete_additional_text(user_id: str, card_id: str, namespace: Optional[str] = None):
-    """Delete additional text for a user
+    """Delete additional text for a user.
     
     Deletes all additional text for the specified user, card, and namespace.
     """
